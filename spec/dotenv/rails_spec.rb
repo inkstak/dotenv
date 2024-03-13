@@ -73,6 +73,20 @@ describe Dotenv::Rails do
       Dotenv::Rails.files << ".env.shared"
       expect(Dotenv::Rails.files.last).to eq(".env.shared")
     end
+
+    it "loads files using predefined DOTENV variable" do
+      ENV["DOTENV"] = "production"
+      Rails.env = "development"
+
+      expect(Dotenv::Rails.files).to eql(
+        [
+          ".env.production.local",
+          ".env.local",
+          ".env.production",
+          ".env"
+        ]
+      )
+    end
   end
 
   it "watches other loaded files with Spring" do

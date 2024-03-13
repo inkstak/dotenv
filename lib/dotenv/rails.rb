@@ -27,17 +27,20 @@ module Dotenv
 
     def initialize
       super()
+
+      current_environment = ENV.fetch("DOTENV", env)
+
       config.dotenv = ActiveSupport::OrderedOptions.new.update(
         # Rails.logger is not available yet, so we'll save log messages and replay them when it is
         logger: Dotenv::ReplayLogger.new,
         overwrite: false,
         files: [
-          ".env.#{env}.local",
-          (".env.local" unless env.test?),
-          ".env.#{env}",
+          ".env.#{current_environment}.local",
+          (".env.local" unless current_environment == "test"),
+          ".env.#{current_environment}",
           ".env"
         ].compact,
-        autorestore: env.test? && !defined?(ClimateControl) && !defined?(IceAge)
+        autorestore: current_environment == "test" && !defined?(ClimateControl) && !defined?(IceAge)
       )
     end
 
